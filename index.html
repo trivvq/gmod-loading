@@ -4,10 +4,8 @@
     <meta charset="UTF-8">
     <title>GMod Loading Screen</title>
     <style>
-        /* УБИРАЕМ ПОЛОСЫ ПРОКРУТКИ БРАУЗЕРА */
-        ::-webkit-scrollbar { 
-            display: none; 
-        }
+        /* Скрываем скроллы */
+        ::-webkit-scrollbar { display: none; }
         
         body {
             margin: 0;
@@ -24,92 +22,101 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             height: 100vh;
             width: 100vw;
-            overflow: hidden; /* Жестко скрываем всё, что вылезает за экран */
+            overflow: hidden;
+            
+            /* Магия Flexbox для центровки */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            
             position: relative;
-            cursor: default; /* Обычный курсор */
         }
 
-        /* Затемнение фона */
+        /* Затемнение фона (виньетка) */
         .overlay {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.3); /* Легкое затемнение */
+            background: radial-gradient(circle, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.8) 100%);
             z-index: 1;
         }
 
-        /* Блок с названием сервера (СЛЕВА СВЕРХУ) */
-        .server-info {
-            position: absolute;
-            top: 50px;
-            left: 60px;
-            z-index: 2;
-            text-shadow: 2px 2px 10px rgba(0,0,0,0.9);
+        /* ГЛАВНЫЙ КОНТЕЙНЕР (ПО ЦЕНТРУ) */
+        .center-box {
+            z-index: 10;
+            text-align: center;
+            width: 600px;
+            
+            /* Стеклянный эффект */
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+            
+            /* Анимация появления */
+            animation: fadeInUp 1s ease-out;
         }
 
         h1 {
-            font-size: 4em;
-            margin: 0;
+            font-size: 3.5em;
+            margin: 0 0 10px 0;
             text-transform: uppercase;
             font-weight: 800;
-            letter-spacing: 3px;
+            letter-spacing: 4px;
             color: #ffffff;
+            text-shadow: 0 0 20px rgba(0, 166, 81, 0.3);
         }
 
         h2 {
-            font-size: 2em;
-            color: #00A651; /* ХАРЬКОВСКИЙ ЗЕЛЕНЫЙ */
-            font-weight: 500;
-            margin-top: 5px;
-        }
-
-        /* Твой кастомный статус-бар (СНИЗУ СПРАВА) */
-        .status-container {
-            position: fixed;
-            bottom: 40px;
-            right: 50px;
-            z-index: 2;
-            width: 450px;
-            background: rgba(0, 0, 0, 0.7); /* Темная подложка */
-            padding: 25px;
-            border-radius: 15px;
-            /* Зеленая линия справа для стиля */
-            border-right: 5px solid #00A651; 
-            backdrop-filter: blur(5px); /* Размытие фона под блоком (красиво!) */
-        }
-
-        .status-text {
             font-size: 1.2em;
+            color: #00A651; /* Зеленый */
+            font-weight: 600;
+            margin: 0 0 30px 0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* Статус тексты */
+        .status-text {
+            font-size: 1.1em;
             font-weight: bold;
             color: white;
             margin-bottom: 5px;
         }
-
+        
         .file-info {
             font-size: 0.9em;
             color: #bbbbbb;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             white-space: nowrap;
             overflow: hidden;
-            text-overflow: ellipsis; /* Если название файла длинное, ставим троеточие */
+            text-overflow: ellipsis;
+            max-width: 100%;
         }
 
-        /* Оболочка полоски (БЕЛАЯ) */
+        /* Полоса загрузки */
         .progress-track {
             width: 100%;
-            height: 12px;
-            background: #ffffff;
-            border-radius: 6px;
+            height: 10px;
+            background: #333;
+            border-radius: 5px;
             overflow: hidden;
-            box-shadow: inset 0 1px 3px rgba(0,0,0,0.3);
+            position: relative;
         }
 
-        /* Сама зеленая полоска */
         .progress-bar {
             height: 100%;
-            width: 0%; /* Изначально 0% */
-            background-color: #00A651; /* ХАРЬКОВСКИЙ ЗЕЛЕНЫЙ */
-            transition: width 0.3s ease-out; /* Плавное движение */
-            box-shadow: 0 0 10px rgba(0, 166, 81, 0.5); /* Небольшое свечение */
+            width: 0%;
+            background: linear-gradient(90deg, #00A651, #00ff7b); /* Градиент Харьков */
+            box-shadow: 0 0 15px #00A651;
+            transition: width 0.3s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
     </style>
@@ -118,14 +125,12 @@
 
     <div class="overlay"></div>
 
-    <div class="server-info">
+    <div class="center-box">
         <h1 id="server-name">ЗАГРУЗКА...</h1>
         <h2 id="map-name">Ожидание данных...</h2>
-    </div>
 
-    <div class="status-container">
         <div class="status-text" id="status-text">Подключение...</div>
-        <div class="file-info" id="file-info">Получение информации о сервере...</div>
+        <div class="file-info" id="file-info">Связь с сервером...</div>
         
         <div class="progress-track">
             <div class="progress-bar" id="load-bar"></div>
@@ -133,46 +138,35 @@
     </div>
 
     <script>
-        // === ЛОГИКА GMOD ===
-        // Эти функции вызываются самой игрой. Мы просто обновляем HTML.
-
+        // Стандартная логика GMod
         let filesTotal = 0;
         let filesNeeded = 0;
 
-        // 1. Установка названия сервера и карты
         function GameDetails( servername, serverurl, mapname, maxplayers, steamid, gamemode ) {
-            document.getElementById('server-name').innerText = servername;
-            document.getElementById('map-name').innerText = mapname;
+            document.getElementById('server-name').innerText = servername || "GARRY'S MOD";
+            document.getElementById('map-name').innerText = "MAP: " + (mapname || "Unknown");
         }
 
-        // 2. Изменение общего статуса (например "Sending Client Info")
         function SetStatusChanged( status ) {
             document.getElementById('status-text').innerText = status;
         }
 
-        // 3. Скачивание конкретного файла
         function DownloadingFile( fileName ) {
-            document.getElementById('file-info').innerText = "Скачивание: " + fileName;
+            document.getElementById('file-info').innerText = fileName;
         }
 
-        // 4. Установка общего количества файлов
         function SetFilesTotal( total ) {
             filesTotal = total;
         }
 
-        // 5. Сколько файлов осталось скачать
         function SetFilesNeeded( needed ) {
             filesNeeded = needed;
             UpdateProgress();
         }
 
-        // Функция обновления зеленой полоски
         function UpdateProgress() {
             if (filesTotal > 0) {
-                // Считаем процент: (Всего - Осталось) / Всего
                 let progress = ((filesTotal - filesNeeded) / filesTotal) * 100;
-                
-                // Округляем и двигаем полоску
                 document.getElementById('load-bar').style.width = progress + "%";
             }
         }

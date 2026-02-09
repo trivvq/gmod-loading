@@ -27,7 +27,7 @@
             cursor: default;
         }
 
-        /* Легкое затемнение фона, чтобы текст читался */
+        /* Легкое затемнение фона */
         .overlay {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -35,24 +35,24 @@
             z-index: 1;
         }
 
-        /* КОНТЕЙНЕР СПРАВА СВЕРХУ */
-        .top-right-box {
+        /* КОНТЕЙНЕР СЛЕВА СВЕРХУ */
+        .top-left-box {
             position: absolute;
             top: 50px;
-            right: 60px;
+            left: 60px; /* ТЕПЕРЬ СЛЕВА */
             z-index: 2;
-            text-align: right; /* Выравнивание текста по правому краю */
+            text-align: left; /* Текст выровнен по левому краю */
         }
 
         /* Название сервера */
         h1 {
-            font-size: 3.5em; /* Крупный текст */
+            font-size: 3.5em;
             margin: 0;
             text-transform: uppercase;
             font-weight: 800;
             letter-spacing: 2px;
             color: #ffffff;
-            text-shadow: 2px 2px 10px rgba(0,0,0,0.8); /* Тень для читаемости */
+            text-shadow: 2px 2px 10px rgba(0,0,0,0.8);
         }
 
         /* Название карты */
@@ -64,17 +64,19 @@
             text-shadow: 1px 1px 5px rgba(0,0,0,0.8);
         }
 
-        /* Текущий статус (то, что делает игра) */
+        /* Текущий статус */
         .status-text {
             font-size: 1.2em;
             color: #eeeeee;
             font-weight: 500;
-            background: rgba(0, 0, 0, 0.6); /* Полупрозрачная подложка */
+            background: rgba(0, 0, 0, 0.6);
             padding: 10px 20px;
             border-radius: 8px;
-            display: inline-block; /* Чтобы фон был только под текстом */
+            display: inline-block;
             backdrop-filter: blur(5px);
-            border-right: 4px solid #00A651; /* Зеленый акцент справа */
+            
+            /* Зеленая линия теперь СЛЕВА */
+            border-left: 4px solid #00A651; 
         }
 
     </style>
@@ -83,7 +85,7 @@
 
     <div class="overlay"></div>
 
-    <div class="top-right-box">
+    <div class="top-left-box">
         <h1 id="server-name">ЗАГРУЗКА...</h1>
         <h2 id="map-name">Ожидание данных...</h2>
         
@@ -94,21 +96,19 @@
         // === ЛОГИКА GMOD ===
         
         function GameDetails( servername, serverurl, mapname, maxplayers, steamid, gamemode ) {
-            // Если название сервера слишком длинное, можно его сократить, но пока оставим как есть
             document.getElementById('server-name').innerText = servername;
             document.getElementById('map-name').innerText = mapname;
         }
 
         function SetStatusChanged( status ) {
-            // Обновляем текст в рамочке
             document.getElementById('status-text').innerText = status;
         }
 
-        // Остальные функции нужны, чтобы GMod не ругался на их отсутствие,
-        // даже если мы не используем полоску загрузки.
         function DownloadingFile( fileName ) {
             document.getElementById('status-text').innerText = "Скачивание: " + fileName;
         }
+        
+        // Пустые функции, чтобы консоль не ругалась
         function SetFilesTotal( total ) {}
         function SetFilesNeeded( needed ) {}
     </script>

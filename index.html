@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>GMod Loading Screen</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #0f0f0f;
+            background-image: radial-gradient(circle at center, #1a1a2e 0%, #000000 100%);
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify_content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        /* Контейнер для контента */
+        .container {
+            text-align: center;
+            z-index: 2;
+        }
+
+        h1 {
+            font-size: 4em;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            color: #fff;
+            text-shadow: 0 0 10px #00d4ff, 0 0 20px #00d4ff;
+            animation: glow 2s infinite alternate;
+        }
+
+        h2 {
+            font-size: 1.5em;
+            color: #aaaaaa;
+            font-weight: 300;
+            margin-bottom: 50px;
+        }
+
+        /* Полоса загрузки */
+        .loader-box {
+            width: 600px;
+            height: 6px;
+            background: #333;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 0 10px rgba(0, 212, 255, 0.2);
+        }
+
+        .loader-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #00d4ff, #9b00ff);
+            width: 0%;
+            animation: load 8s ease-in-out infinite;
+            box-shadow: 0 0 15px #00d4ff;
+        }
+
+        /* Декоративная сетка на фоне */
+        .grid {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: 
+                linear-gradient(rgba(0, 212, 255, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 212, 255, 0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            perspective: 500px;
+            transform: perspective(500px) rotateX(60deg) translateY(-100px) scale(2);
+            opacity: 0.2;
+            animation: gridMove 20s linear infinite;
+        }
+
+        /* Анимации */
+        @keyframes glow {
+            from { text-shadow: 0 0 10px #00d4ff, 0 0 20px #00d4ff; }
+            to { text-shadow: 0 0 20px #00d4ff, 0 0 40px #9b00ff; }
+        }
+
+        @keyframes load {
+            0% { width: 0%; }
+            50% { width: 70%; }
+            100% { width: 100%; }
+        }
+
+        @keyframes gridMove {
+            0% { transform: perspective(500px) rotateX(60deg) translateY(0) scale(2); }
+            100% { transform: perspective(500px) rotateX(60deg) translateY(50px) scale(2); }
+        }
+
+        .status {
+            margin-top: 20px;
+            font-size: 0.9em;
+            color: #666;
+            animation: blink 1.5s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="grid"></div>
+
+    <div class="container">
+        <h1>НАЗВАНИЕ СЕРВЕРА</h1>
+        <h2>Добро пожаловать в игру</h2>
+
+        <div class="loader-box">
+            <div class="loader-bar"></div>
+        </div>
+
+        <div class="status">Загрузка ресурсов...</div>
+    </div>
+
+    <script>
+        // Небольшой скрипт для получения данных от GMod (название карты и т.д.)
+        function GameDetails( servername, serverurl, mapname, maxplayers, steamid, gamemode ) {
+            document.querySelector('h1').innerText = servername || "НАЗВАНИЕ СЕРВЕРА";
+            document.querySelector('h2').innerText = "Карта: " + (mapname || "Загрузка...");
+        }
+        
+        // Эта функция вызывается GMod'ом автоматически при изменении статуса загрузки
+        function SetStatusChanged( status ) {
+            document.querySelector('.status').innerText = status;
+        }
+    </script>
+</body>
+</html>

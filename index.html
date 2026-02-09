@@ -4,133 +4,164 @@
     <meta charset="UTF-8">
     <title>GMod Loading Screen</title>
     <style>
+        /* ОСНОВНОЙ ФОН */
         body {
             margin: 0;
             padding: 0;
-            background-color: #0f0f0f;
-            background-image: radial-gradient(circle at center, #1a1a2e 0%, #000000 100%);
+            background-color: #1a1a1a; /* Цвет на случай, если картинка не прогрузится */
+            
+            /* ВАЖНО: Замени 'bg.jpg' на точное название твоего файла с картинкой! */
+            background-image: url('bg.jpg');
+            
+            background-size: cover;   /* Растягивает картинку на весь экран */
+            background-position: center center; /* Центрирует картинку */
+            background-attachment: fixed;
             color: white;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify_content: center;
-            align-items: center;
             overflow: hidden;
+            position: relative;
         }
 
-        /* Контейнер для контента */
-        .container {
-            text-align: center;
+        /* Затемнение фона, чтобы текст лучше читался */
+        .overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.4); /* Полупрозрачный черный слой */
+            z-index: 1;
+        }
+
+        /* Контейнер для заголовков (слева сверху) */
+        .top-left-content {
+            position: absolute;
+            top: 40px;
+            left: 50px;
             z-index: 2;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.8); /* Тень для текста */
         }
 
         h1 {
-            font-size: 4em;
-            margin-bottom: 10px;
+            font-size: 3.5em;
+            margin: 0;
             text-transform: uppercase;
-            letter-spacing: 5px;
-            color: #fff;
-            text-shadow: 0 0 10px #00d4ff, 0 0 20px #00d4ff;
-            animation: glow 2s infinite alternate;
+            font-weight: 800;
+            letter-spacing: 2px;
+            color: #ffffff;
         }
 
         h2 {
-            font-size: 1.5em;
-            color: #aaaaaa;
-            font-weight: 300;
-            margin-bottom: 50px;
+            font-size: 1.8em;
+            color: #00A651; /* Харьковский зеленый для подзаголовка */
+            font-weight: 400;
+            margin-top: 10px;
         }
 
-        /* Полоса загрузки */
+        /* Контейнер для загрузки (СНИЗУ СПРАВА) */
+        .bottom-right-box {
+            position: fixed;
+            bottom: 30px;
+            right: 40px;
+            z-index: 2;
+            width: 400px; /* Ширина блока загрузки */
+            text-align: right;
+            background: rgba(0, 0, 0, 0.6); /* Фон под блоком для читаемости */
+            padding: 20px;
+            border-radius: 12px;
+            border-right: 4px solid #00A651; /* Зеленая полоска справа для стиля */
+        }
+
+        /* Сама полоса загрузки (Фон - белый) */
         .loader-box {
-            width: 600px;
-            height: 6px;
-            background: #333;
-            border-radius: 10px;
+            width: 100%;
+            height: 14px;
+            background: #ffffff; /* БЕЛЫЙ ФОН */
+            border-radius: 7px;
             overflow: hidden;
             position: relative;
-            box-shadow: 0 0 10px rgba(0, 212, 255, 0.2);
+            margin-top: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
         }
 
+        /* Прогресс бар (Цвет - Харьковский зеленый) */
         .loader-bar {
             height: 100%;
-            background: linear-gradient(90deg, #00d4ff, #9b00ff);
-            width: 0%;
-            animation: load 8s ease-in-out infinite;
-            box-shadow: 0 0 15px #00d4ff;
+            background: #00A651; /* ХАРЬКОВСКИЙ ЗЕЛЕНЫЙ */
+            width: 0%; /* Начинается с 0% */
+            /* Анимация для примера, GMod сам будет ей управлять */
+            transition: width 0.4s ease; 
+             /* Убери строчку ниже, если хочешь, чтобы полоска двигалась только реально от GMod */
+            animation: load-demo 8s ease-in-out infinite; 
+        }
+        
+        /* Демо-анимация (можно убрать) */
+         @keyframes load-demo {
+            0% { width: 5%; }
+            50% { width: 60%; }
+            100% { width: 95%; }
         }
 
-        /* Декоративная сетка на фоне */
-        .grid {
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-image: 
-                linear-gradient(rgba(0, 212, 255, 0.1) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 212, 255, 0.1) 1px, transparent 1px);
-            background-size: 50px 50px;
-            perspective: 500px;
-            transform: perspective(500px) rotateX(60deg) translateY(-100px) scale(2);
-            opacity: 0.2;
-            animation: gridMove 20s linear infinite;
+        .status-text {
+            font-size: 1.1em;
+            color: #ffffff;
+            font-weight: 600;
+        }
+        
+        .status-detail {
+             font-size: 0.9em;
+             color: #cccccc;
+             margin-top: 5px;
         }
 
-        /* Анимации */
-        @keyframes glow {
-            from { text-shadow: 0 0 10px #00d4ff, 0 0 20px #00d4ff; }
-            to { text-shadow: 0 0 20px #00d4ff, 0 0 40px #9b00ff; }
-        }
-
-        @keyframes load {
-            0% { width: 0%; }
-            50% { width: 70%; }
-            100% { width: 100%; }
-        }
-
-        @keyframes gridMove {
-            0% { transform: perspective(500px) rotateX(60deg) translateY(0) scale(2); }
-            100% { transform: perspective(500px) rotateX(60deg) translateY(50px) scale(2); }
-        }
-
-        .status {
-            margin-top: 20px;
-            font-size: 0.9em;
-            color: #666;
-            animation: blink 1.5s infinite;
-        }
-
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
     </style>
 </head>
 <body>
 
-    <div class="grid"></div>
+    <div class="overlay"></div>
 
-    <div class="container">
-        <h1>НАЗВАНИЕ СЕРВЕРА</h1>
-        <h2>Добро пожаловать в игру</h2>
+    <div class="top-left-content">
+        <h1 id="server-name">НАЗВАНИЕ СЕРВЕРА</h1>
+        <h2 id="map-name">Карта: Загрузка...</h2>
+    </div>
 
+    <div class="bottom-right-box">
+        <div class="status-text">Подключение к серверу...</div>
+        <div class="status-detail" id="status-detail">Инициализация...</div>
+        
         <div class="loader-box">
-            <div class="loader-bar"></div>
+            <div class="loader-bar" id="loadbar"></div>
         </div>
-
-        <div class="status">Загрузка ресурсов...</div>
     </div>
 
     <script>
-        // Небольшой скрипт для получения данных от GMod (название карты и т.д.)
+        // Скрипт для получения данных от GMod
+        
+        // Основная информация о сервере
         function GameDetails( servername, serverurl, mapname, maxplayers, steamid, gamemode ) {
-            document.querySelector('h1').innerText = servername || "НАЗВАНИЕ СЕРВЕРА";
-            document.querySelector('h2').innerText = "Карта: " + (mapname || "Загрузка...");
+            document.getElementById('server-name').innerText = servername || "Мой Сервер";
+            document.getElementById('map-name').innerText = "Карта: " + (mapname || "Неизвестно");
         }
         
-        // Эта функция вызывается GMod'ом автоматически при изменении статуса загрузки
+        // Изменение текста статуса (например, "Загрузка текстур...")
         function SetStatusChanged( status ) {
-            document.querySelector('.status').innerText = status;
+            document.getElementById('status-detail').innerText = status;
         }
+        
+        // Движение полоски загрузки (файлы)
+        function DownloadingFile( fileName ) {
+             document.getElementById('status-detail').innerText = "Скачивание: " + fileName;
+        }
+        
+        // Движение полоски загрузки (общий прогресс)
+        function SetFilesNeeded( needed ) {
+             // Эта функция нужна для расчета процента, но в простой версии можно опустить
+        }
+        
+        function SetFilesTotal( total ) {
+            // Эта функция нужна для расчета процента
+        }
+        
+        // GMod в новых версиях сам двигает полоску, если она правильно настроена,
+        // но этот скрипт помогает обновлять текстовые статусы.
     </script>
 </body>
 </html>
